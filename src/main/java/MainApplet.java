@@ -16,13 +16,14 @@ public class MainApplet extends PApplet{
 	JSONArray nodes, links;
 	private ArrayList<Character> characters;
 	private ArrayList<Character> network;
-
+	//¬ö¿ý·Æ¹«¥Ø«e©ì¦²ªºcharacter
 	private Character characters_now;
 
 	private String path = "main/resources/";
 	private String file = "starwars-episode-1-interactions.json";
 	
 	private final static int width = 1200, height = 650;
+	
 	public void setup() {
 		
 		characters = new ArrayList<Character>();
@@ -32,48 +33,44 @@ public class MainApplet extends PApplet{
 		size(width, height);
 		smooth();
 		loadData();
-				
-	}
-	public void drawnetwork(){
-		if(network.size()!=0){
-			float network_num = 2f*(float)Math.PI/((float)network.size());
-			float i = 1;
-			for(Character character: this.network){
-				character.x = 600 + 250*cos(i*network_num);
-				character.y = 350 + 250*sin(i*network_num);
-				character.display();
-				i++;
-			}
-		}
 	}
 	
-	public void keyPressed(){
-		if(keyCode==32)
-			setup();
-	}
 	public void draw() {
 		background(255);
+		
+		//draw circle
 		stroke(0);
 		strokeWeight(2);
 		fill(255);
 		ellipse(600, 350, 500, 500);
 		
+		//draw network (if the character and its target are both in network)
+		noFill();
 		for(Character character: this.network){
 			for(Character target: character.getTargets()){
-				if(network.contains(target)==true)
-					//arc(character.x, character.y, target.x, target.y, PI+QUARTER_PI, TWO_PI);
-					//curve(600, 350,character.x, character.y,target.x, target.y, 600, 350);
-					line(character.x, character.y, target.x, target.y);
+				if(network.contains(target)==true){
+					//for curve line
+					float a = (character.x+target.x)/2;
+					float b = (character.y+target.y)/2;
+					a=(a+600)/2;
+					b=(b+350)/2;
+					bezier(character.x, character.y,a,b,a,b, target.x, target.y);
+					
+					//for straight line (for test)
+					//line(character.x, character.y, target.x, target.y);
+				}
 			}
 		}
 		
-	
+		//draw left-side character points 
 		for(Character character : characters)
 			character.display();
 		
+		//draw right-side character points
 		for(Character character : network)
 			character.display();
 		
+		//draw character's name
 		noStroke();
 		float a ,b; 		
 		for(Character character : characters){
@@ -100,20 +97,10 @@ public class MainApplet extends PApplet{
 			}
 		}
 		
-		/*
-		for(Character character: network){
-			for(Character target: character.getTargets())
-				//if(network.contains(target))
-					line(character.x, character.y, target.x, target.y);
-				//Ani.to(this, (float) 0.5, "radius", 100, Ani.LINEAR);
-		}
-		*/
-		
-		
-		
 	}
 	
-	public void mouseDragged( ) {	
+	public void mouseDragged( ) {
+		//when mouse dragged point moved
 			if(characters_now!=null){
 				characters_now.x = mouseX;
 				characters_now.y = mouseY;
@@ -121,6 +108,7 @@ public class MainApplet extends PApplet{
 	}
 
 	public void mousePressed(){
+		//find which point was dragged, and record
 		boolean find = false;
 		for(Character character : characters){
 			if(((character.x-mouseX)*(character.x-mouseX))+((character.y-mouseY)*(character.y-mouseY))<225){
@@ -129,7 +117,7 @@ public class MainApplet extends PApplet{
 				break;
 			}
 		}
-		if(find==false){
+		if(find==false){ 
 			for(Character character : network){
 				if(((character.x-mouseX)*(character.x-mouseX))+((character.y-mouseY)*(character.y-mouseY))<225){
 					characters_now = character;
@@ -137,10 +125,10 @@ public class MainApplet extends PApplet{
 				}
 			}
 		}
-		//Ani.to(this, (float) 2, "x3", 1100, Ani.CIRC_IN);
 	}
 
 	public void mouseReleased(){
+		//check whether this point have been add to network or not
 		if(characters_now!=null){
 			if((((characters_now.x-600)*(characters_now.x-600))+((characters_now.y-350)*(characters_now.y-350)))>62500){
 				characters_now.x = characters_now.ini_x;
@@ -156,14 +144,28 @@ public class MainApplet extends PApplet{
 					characters.remove(characters_now);
 				}
 			}
-			
 			drawnetwork();
 		}
 		characters_now = null;	
 	}
-
+	
+	//draw right-side network
+	public void drawnetwork(){
+		if(network.size()!=0){
+			float network_num = 2f*(float)Math.PI/((float)network.size());
+			float i = 1;
+			for(Character character: this.network){
+				character.x = 600 + 250*cos(i*network_num);
+				character.y = 350 + 250*sin(i*network_num);
+				character.display();
+				i++;
+			}
+		}
+	}
+	
+	
 	private void loadData(){
-		int x = 50;
+		int x = 50; //just for calculating location
 		data = loadJSONObject(path+file);
 		nodes = data.getJSONArray("nodes");
 		links = data.getJSONArray("links");

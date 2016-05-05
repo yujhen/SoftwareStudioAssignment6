@@ -14,21 +14,21 @@ public class Character {
 	private ArrayList<Character> targets;
 	public String color;
 	public Character(MainApplet parent, String name, String color, float x, float y){
-		this.ini_x = x;
-		this.ini_y = y;
-		this.color = color.substring(1) ;
+		this.ini_x = x; //left-side x-location
+		this.ini_y = y; //left-side y-location
+		this.color = color.substring(1) ; //get color string
 		this.name = name;
 		this.parent = parent;
 		this.targets = new ArrayList<Character>();
 		this.parent = parent;
-		this.x = this.ini_x;
-		this.y = this.ini_y;
+		this.x = this.ini_x; //now x-location
+		this.y = this.ini_y; //now y-location
 	}
 
 	public void display(){
 		this.parent.noStroke();
 		this.parent.fill(this.parent.unhex(this.color));
-		this.parent.ellipse(x, y, 30, 30);
+		this.parent.ellipse(x, y, 30, 30); //r=15
 	}
 
 	
