@@ -2,8 +2,6 @@ package main.java;
 
 import java.util.ArrayList;
 
-import processing.core.PApplet;
-
 /**
 * This class is used to store states of the characters in the program.
 * You will need to declare other variables depending on your implementation.
@@ -11,24 +9,27 @@ import processing.core.PApplet;
 public class Character {
 	
 	private MainApplet parent;
-	public float x, y, radius;
+	public float ini_x, ini_y, x, y;
 	private String name;
 	private ArrayList<Character> targets;
 	private String color;
 	public Character(MainApplet parent, String name, String color, float x, float y){
-		this.x = x;
-		this.y = y;
-		this.color = color;
+		this.ini_x = x;
+		this.ini_y = y;
+		this.color = color.substring(1) ;
 		this.name = name;
 		this.parent = parent;
 		this.targets = new ArrayList<Character>();
 		this.parent = parent;
-		
+		this.x = this.ini_x;
+		this.y = this.ini_y;
 	}
 
 	public void display(){
-		this.parent.fill(210, 2, 11);
-		this.parent.ellipse(x, y, 20, 20);
+		this.parent.noStroke();
+		this.parent.fill(this.parent.unhex(this.color));
+		this.parent.ellipse(x, y, 30, 30);
+		
 		
 		//this.parent.textSize(26);
 		//this.parent.fill(255);
@@ -38,6 +39,10 @@ public class Character {
 	
 	public void addTarget(Character target){
 		this.targets.add(target);
+	}
+	
+	public void removeTarget(Character target){
+		this.targets.remove(target);
 	}
 	
 	public ArrayList<Character> getTargets(){
