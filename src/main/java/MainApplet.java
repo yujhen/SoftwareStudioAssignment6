@@ -23,7 +23,6 @@ public class MainApplet extends PApplet{
 	private String file = "starwars-episode-1-interactions.json";
 	
 	private final static int width = 1200, height = 650;
-	//private int x1, y1, x2, y2, x3, y3;
 	public void setup() {
 		
 		characters = new ArrayList<Character>();
@@ -33,10 +32,21 @@ public class MainApplet extends PApplet{
 		size(width, height);
 		smooth();
 		loadData();
-		
-		//x3 = 100; y3 = 500;
-		
+				
 	}
+	public void drawnetwork(){
+		if(network.size()!=0){
+			float network_num = 2f*(float)Math.PI/((float)network.size());
+			float i = 1;
+			for(Character character: this.network){
+				character.x = 600 + 250*cos(i*network_num);
+				character.y = 350 + 250*sin(i*network_num);
+				character.display();
+				i++;
+			}
+		}
+	}
+	
 	public void keyPressed(){
 		if(keyCode==32)
 			setup();
@@ -48,17 +58,59 @@ public class MainApplet extends PApplet{
 		fill(255);
 		ellipse(600, 350, 500, 500);
 		
-		 
-
-		//ellipse(x3, y3, 100, 100);
-		/*
-		for(Character character: this.characters){
-			for(Character target: character.getTargets())
-				line(character.x, character.y, target.x, target.y);
-				//Ani.to(this, (float) 0.5, "radius", 100, Ani.LINEAR);
-		}*/
+		for(Character character: this.network){
+			for(Character target: character.getTargets()){
+				if(network.contains(target)==true)
+					//arc(character.x, character.y, target.x, target.y, PI+QUARTER_PI, TWO_PI);
+					//curve(600, 350,character.x, character.y,target.x, target.y, 600, 350);
+					line(character.x, character.y, target.x, target.y);
+			}
+		}
+		
+	
 		for(Character character : characters)
 			character.display();
+		
+		for(Character character : network)
+			character.display();
+		
+		noStroke();
+		float a ,b; 		
+		for(Character character : characters){
+			a = (mouseX - character.x);
+			b = (mouseY - character.y);
+			if((a*a)+(b*b)<225){
+				fill(unhex(character.color));
+				rect(character.x+character.name.length()+15, character.y-35, character.name.length()*14+5, 30, 12, 12, 12, 12);
+				textSize(20);
+				fill(0);
+				text(character.name, character.x+character.name.length()+20,  character.y-13);
+			}
+		}
+		
+		for(Character character : network){
+			a = (mouseX - character.x);
+			b = (mouseY - character.y);
+			if((a*a)+(b*b)<225){
+				fill(unhex(character.color));
+				rect(character.x+character.name.length()+15, character.y-35, character.name.length()*14+5, 30, 12, 12, 12, 12);
+				textSize(20);
+				fill(0);
+				text(character.name, character.x+character.name.length()+20,  character.y-13);
+			}
+		}
+		
+		/*
+		for(Character character: network){
+			for(Character target: character.getTargets())
+				//if(network.contains(target))
+					line(character.x, character.y, target.x, target.y);
+				//Ani.to(this, (float) 0.5, "radius", 100, Ani.LINEAR);
+		}
+		*/
+		
+		
+		
 	}
 	
 	public void mouseDragged( ) {	
@@ -104,6 +156,8 @@ public class MainApplet extends PApplet{
 					characters.remove(characters_now);
 				}
 			}
+			
+			drawnetwork();
 		}
 		characters_now = null;	
 	}
@@ -125,6 +179,7 @@ public class MainApplet extends PApplet{
 			JSONObject link = links.getJSONObject(i);
 			characters.get(link.getInt("source")).addTarget(characters.get(link.getInt("target")));
 		}
+		
 	}
 
 }
