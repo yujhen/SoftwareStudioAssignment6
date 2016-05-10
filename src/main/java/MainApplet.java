@@ -2,7 +2,10 @@ package main.java;
 
 import processing.core.PApplet;
 import java.util.ArrayList;
+import java.util.Random;
 
+import controlP5.*;
+//import controlP5.ControlP5;
 import de.looksgood.ani.Ani;
 import processing.data.JSONArray;
 import processing.data.JSONObject;
@@ -21,10 +24,12 @@ public class MainApplet extends PApplet{
 
 	private String path = "main/resources/";
 	private String file = "starwars-episode-1-interactions.json";
-	
+	private ControlP5 cp5;
+	private String msg = "";
 	private final static int width = 1200, height = 650;
 	
 	public void setup() {
+		
 		
 		characters = new ArrayList<Character>();
 		network = new ArrayList<Character>();
@@ -33,6 +38,11 @@ public class MainApplet extends PApplet{
 		size(width, height);
 		smooth();
 		loadData();
+		msg = "starwars episode 1";
+		cp5 = new ControlP5(this);
+		cp5.addButton("buttonA").setLabel("add all").setPosition(850, 100).setSize(100, 50);
+		cp5.addButton("buttonB").setLabel("clear").setPosition(1000, 100).setSize(100, 50);
+		
 	}
 	
 	public void draw() {
@@ -96,7 +106,80 @@ public class MainApplet extends PApplet{
 				text(character.name, character.x+character.name.length()+20,  character.y-13);
 			}
 		}
+		textSize(26);
+		text(msg,width/2-150,50);
 		
+	}
+
+	public void buttonA(){
+		for(Character character : characters)
+		{
+			network.add(character);
+			//characters.remove(character);
+		}
+		characters.clear();
+		drawnetwork();
+	}
+	public void buttonB(){
+		for(Character character : network)
+		{
+			characters.add(character);
+		}
+		network.clear();
+		drawnetwork();
+		for(Character character : characters)
+		{
+			character.x=character.ini_x;
+			character.y=character.ini_y;
+		}
+		
+	}
+	
+	public void keyPressed(){
+		if (keyCode == 97 || keyCode == 49) 
+		{
+			//path = "main/resources/";
+			file = "starwars-episode-1-interactions.json";
+			loadData();
+			msg = "starwars episode 1";
+		}
+		else if (keyCode == 98 || keyCode == 50) 
+		{
+			file = "starwars-episode-2-interactions.json";
+			loadData();
+			msg = "starwars episode 2";
+		}
+		else if (keyCode == 99 || keyCode == 51) 
+		{
+			file = "starwars-episode-3-interactions.json";
+			loadData();
+			msg = "starwars episode 3";
+		}
+		else if (keyCode == 100 || keyCode == 52) 
+		{
+			file = "starwars-episode-4-interactions.json";
+			loadData();
+			msg = "starwars episode 4";
+		}
+		else if (keyCode == 101 || keyCode == 53) 
+		{
+			file = "starwars-episode-5-interactions.json";
+			loadData();
+			msg = "starwars episode 5";
+		}
+		else if (keyCode == 102 || keyCode == 54) 
+		{
+			file = "starwars-episode-6-interactions.json";
+			loadData();
+			msg = "starwars episode 6";
+		}
+		else if (keyCode == 103 || keyCode == 55) 
+		{
+			file = "starwars-episode-7-interactions.json";
+			loadData();
+			msg = "starwars episode 7";
+		} 
+			
 	}
 	
 	public void mouseDragged( ) {
@@ -166,6 +249,8 @@ public class MainApplet extends PApplet{
 	
 	private void loadData(){
 		int x = 50; //just for calculating location
+		characters.clear();
+		network.clear();
 		data = loadJSONObject(path+file);
 		nodes = data.getJSONArray("nodes");
 		links = data.getJSONArray("links");
